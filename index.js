@@ -9,16 +9,20 @@ app.use(cors())
 app.use(express.json())
 
 
-const uri = "mongodb+srv://emaServer:34yllGkGpskxV7S@cluster0.jxzaj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.jxzaj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
 async function run() {
     try{
         await client.connect();
-        const productCollection=client.db('ema-john-server').collection('product');
+        const productCollection=client.db('emaServer').collection('product');
+      
         app.get('/product',async(req,res)=>{
             const query={}
             const cursor = productCollection.find(query);
-            const products=await cursor.toArray();
+            const products=await cursor.limit(5).toArray();
+            // const products=await cursor.limit(5).toArray(); //limit ay joto value dibo to gulo data add korbay
             res.send(products);
         })
         
